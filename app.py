@@ -4,101 +4,72 @@ import sqlite3
 # ---------------- PAGE SETUP ----------------
 st.set_page_config(
     page_title="To-Do App",
-    page_icon="💜",
+    page_icon="✅",
     layout="centered"
 )
 
-# ---------------- CSS (FONT ENHANCEMENT ONLY) ----------------
+# ---------------- BOOTSTRAP ----------------
+st.markdown("""
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+""", unsafe_allow_html=True)
+
+# ---------------- CSS (BEAUTIFUL UI + GLASSMORPHISM) ----------------
 st.markdown("""
 <style>
-
-/* Stylish Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@600&display=swap');
-
-/* Full screen background */
-html, body, [class*="stApp"] {
-    background-color: #f3e8ff;
-    font-family: 'Poppins', sans-serif;
+/* Full page background */
+body {
+    background-color: #d8b4fe;  /* light purple */
 }
 
-.main {
-    background-color: #f3e8ff;
+/* Glassmorphism card */
+.app-card {
+    background: rgba(255, 255, 255, 0.1);  /* semi-transparent */
+    backdrop-filter: blur(10px);           /* blur background */
+    -webkit-backdrop-filter: blur(10px);   /* Safari support */
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px auto;
+    max-width: 700px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
-/* Main title – classy & bold */
-h1 {
-    font-family: 'Playfair Display', serif;
-    color: #6d28d9;
-    text-align: center;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    animation: fadeDown 0.8s ease;
+/* Responsive for mobile */
+@media (max-width: 768px) {
+    .app-card {
+        margin: 10px;
+        padding: 20px;
+    }
 }
 
-/* Caption */
-p {
-    text-align: center;
-    color: #6b7280;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    animation: fadeDown 1s ease;
-}
-
-/* Task card */
+/* Task styling inside card */
 .task {
-    background: #ffffff;
-    padding: 14px 18px;
-    border-radius: 16px;
-    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 8px 20px rgba(109,40,217,0.15);
-    animation: fadeUp 0.5s ease;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    font-weight: 500;
-    letter-spacing: 0.2px;
+    transition: 0.3s;
 }
-
-/* Hover animation */
 .task:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 28px rgba(109,40,217,0.25);
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
 }
 
-/* Done task */
+/* Stylish fonts */
+h1, h2, h3 {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+}
+
 .done {
-    color: #9ca3af;
+    color: gray;
     text-decoration: line-through;
-    font-weight: 500;
 }
-
-/* Priority badges */
-.badge-high { color: #dc2626; font-weight: 600; }
-.badge-medium { color: #ca8a04; font-weight: 600; }
-.badge-low { color: #16a34a; font-weight: 600; }
-
-/* Buttons */
-button {
-    font-family: 'Poppins', sans-serif !important;
-    font-weight: 500 !important;
-    transition: all 0.2s ease !important;
-}
-button:hover {
-    transform: scale(1.05);
-}
-
-/* Animations */
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
+.badge-high { color: #ef4444; font-weight: bold; }
+.badge-medium { color: #facc15; font-weight: bold; }
+.badge-low { color: #22c55e; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -116,8 +87,14 @@ CREATE TABLE IF NOT EXISTS tasks (
 """)
 conn.commit()
 
+# ---------------- WRAP CONTENT IN GLASSMORPHIC CARD ----------------
+st.markdown('<div class="app-card">', unsafe_allow_html=True)
+
 # ---------------- TITLE ----------------
-st.title("My To-Do App")
+st.markdown(
+    "<h1 style='color:#d946ef; font-family: \"Playfair Display\", serif; text-align:center;'>My To-Do App</h1>",
+    unsafe_allow_html=True
+)
 st.caption("Organize your day with clarity")
 
 # ---------------- ADD TASK ----------------
@@ -190,6 +167,9 @@ for task_id, task_text, done, priority in tasks:
             c.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
             conn.commit()
             st.rerun()
+
+# ---------------- END OF CARD ----------------
+st.markdown('</div>', unsafe_allow_html=True)
 
 
 
