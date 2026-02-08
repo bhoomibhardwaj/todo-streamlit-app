@@ -92,7 +92,7 @@ st.markdown('<div class="app-card">', unsafe_allow_html=True)
 
 # ---------------- TITLE ----------------
 st.markdown(
-    "<h1 style='color:#d946ef; font-family: \"Playfair Display\", serif; text-align:center;'>My To-Do App</h1>",
+    "<h1 style='color:#d946ef; font-family: \"Playfair Display\", serif; text-align:center;'>To-Do App</h1>",
     unsafe_allow_html=True
 )
 st.caption("Organize your day with clarity")
@@ -170,6 +170,7 @@ for task_id, task_text, done, priority in tasks:
 
 # ---------------- END OF CARD ----------------
 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
