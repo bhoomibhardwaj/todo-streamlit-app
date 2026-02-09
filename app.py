@@ -8,68 +8,139 @@ st.set_page_config(
     layout="centered"
 )
 
-# ---------------- BOOTSTRAP ----------------
-st.markdown("""
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-""", unsafe_allow_html=True)
+# ---------------- THEME TOGGLE ----------------
+if "theme" not in st.session_state:
+    st.session_state.theme = "light"
 
-# ---------------- CSS (BEAUTIFUL UI + GLASSMORPHISM) ----------------
-st.markdown("""
+theme_choice = st.radio(
+    "Theme",
+    ["Light", "Dark"],
+    index=0 if st.session_state.theme == "light" else 1,
+    horizontal=True
+)
+st.session_state.theme = "light" if theme_choice=="Light" else "dark"
+
+# ---------------- THEME COLORS ----------------
+if st.session_state.theme == "light":
+    bg_color = "#fdf4ff"
+    glass = "rgba(255,255,255,0.35)"
+    neon = "#a855f7"
+    task_bg = "rgba(255,255,255,0.55)"
+    task_text = "#1f2937"
+    badge_colors = {"High":"#ef4444", "Medium":"#f59e0b", "Low":"#22c55e"}
+else:
+    bg_color = "#0f172a"
+    glass = "rgba(30,41,59,0.45)"
+    neon = "#f472b6"
+    task_bg = "rgba(30,41,59,0.55)"
+    task_text = "#f8fafc"
+    badge_colors = {"High":"#f87171", "Medium":"#fbbf24", "Low":"#34d399"}
+
+# ---------------- CSS ----------------
+st.markdown(f"""
 <style>
-/* Full page background */
-body {
-    background-color: #d8b4fe;  /* light purple */
-}
+header, footer {{visibility:hidden;}}
+body {{
+    background:{bg_color};
+    animation:fadein 0.6s ease;
+}}
+@keyframes fadein {{
+from {{opacity:0; transform:translateY(10px);}}
+to {{opacity:1; transform:translateY(0);}}
+}}
 
-/* Glassmorphism card */
-.app-card {
-    background: rgba(255, 255, 255, 0.1);  /* semi-transparent */
-    backdrop-filter: blur(10px);           /* blur background */
-    -webkit-backdrop-filter: blur(10px);   /* Safari support */
-    border-radius: 20px;
-    padding: 30px;
-    margin: 20px auto;
-    max-width: 700px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-}
-
-/* Responsive for mobile */
-@media (max-width: 768px) {
-    .app-card {
-        margin: 10px;
-        padding: 20px;
-    }
-}
-
-/* Task styling inside card */
-.task {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 12px;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: 0.3s;
-}
-.task:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-}
-
-/* Stylish fonts */
-h1, h2, h3 {
+h1 {{
+    text-align:center;
+    color:{neon};
+    text-shadow:0 0 10px {neon};
     font-family: "Playfair Display", serif;
-    font-weight: 700;
-}
+}}
 
-.done {
-    color: gray;
-    text-decoration: line-through;
-}
-.badge-high { color: #ef4444; font-weight: bold; }
-.badge-medium { color: #facc15; font-weight: bold; }
-.badge-low { color: #22c55e; font-weight: bold; }
+/* CLEAN LABELS */
+label {{
+    background:none !important;
+    border:none !important;
+    font-weight:600;
+    color:{task_text};
+}}
+
+/* CLEAN SELECTBOX */
+.stSelectbox > div > div {{
+    background:{glass};
+    border-radius:14px;
+    border:2px solid {neon};
+    backdrop-filter:blur(12px);
+    box-shadow:0 0 12px {neon};
+    color:{task_text};
+}}
+
+/* TEXT INPUT */
+.stTextInput input {{
+    background:{glass};
+    border-radius:14px;
+    border:2px solid {neon};
+    backdrop-filter:blur(12px);
+    box-shadow:0 0 12px {neon};
+    color:{task_text};
+}}
+
+/* BUTTON */
+.stButton button {{
+    background:{glass};
+    border:2px solid {neon};
+    border-radius:14px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 0 12px {neon};
+    transition:0.3s;
+    color:{task_text};
+}}
+.stButton button:hover {{
+    transform:translateY(-2px) scale(1.03);
+    box-shadow:0 0 20px {neon};
+}}
+
+/* TASK CARD */
+.task {{
+    background:{task_bg};
+    color:{task_text};
+    padding:14px;
+    border-radius:14px;
+    margin-bottom:10px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 0 10px {neon};
+    transition:0.3s;
+}}
+.task:hover {{
+    transform:translateY(-3px);
+    box-shadow:0 0 18px {neon};
+}}
+
+/* DONE TASK */
+.done {{
+    text-decoration:line-through;
+    opacity:0.6;
+}}
+
+/* TASK BADGES - NEON & ANIMATED */
+.badge-high, .badge-medium, .badge-low {{
+    color:white;
+    font-weight:bold;
+    background: none;
+    border:2px solid;
+    border-radius:8px;
+    padding:2px 6px;
+    font-family:"Playfair Display", serif;
+    animation: glow 1.5s infinite alternate;
+}}
+
+.badge-high {{ border-color:{badge_colors["High"]}; color:{badge_colors["High"]}; }}
+.badge-medium {{ border-color:{badge_colors["Medium"]}; color:{badge_colors["Medium"]}; }}
+.badge-low {{ border-color:{badge_colors["Low"]}; color:{badge_colors["Low"]}; }}
+
+@keyframes glow {{
+    from {{ box-shadow:0 0 5px currentColor; }}
+    to {{ box-shadow:0 0 15px currentColor; }}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -87,44 +158,48 @@ CREATE TABLE IF NOT EXISTS tasks (
 """)
 conn.commit()
 
-# ---------------- WRAP CONTENT IN GLASSMORPHIC CARD ----------------
-st.markdown('<div class="app-card">', unsafe_allow_html=True)
-
 # ---------------- TITLE ----------------
-st.markdown(
-    "<h1 style='color:#d946ef; font-family: \"Playfair Display\", serif; text-align:center;'>To-Do App</h1>",
-    unsafe_allow_html=True
-)
-st.caption("Organize your day with clarity")
+st.markdown("<h1>To-Do App</h1>", unsafe_allow_html=True)
+st.markdown("""
+<div style="
+    text-align:center;
+    font-weight:bold;
+    font-size:18px;
+    animation: fadeInCaption 1s ease-in-out;
+    color: #ff6ec7;  /* tu chahe to neon color ya theme color bhi use kar sakta hai */
+">
+MANAGE YOUR TASKS EFFICIENTLY
+</div>
+
+<style>
+@keyframes fadeInCaption {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+
+
+
 
 # ---------------- ADD TASK ----------------
-with st.container():
-    task = st.text_input("Enter your task")
-    priority = st.selectbox("Priority", ["High", "Medium", "Low"])
+task = st.text_input("Enter your task")
+priority = st.selectbox("Priority", ["High","Medium","Low"])
 
-    if st.button("➕ Add Task"):
-        if task.strip():
-            c.execute(
-                "INSERT INTO tasks (task, done, priority) VALUES (?, ?, ?)",
-                (task, 0, priority)
-            )
-            conn.commit()
-            st.success("Task added!")
-            st.rerun()
+if st.button("➕ Add Task"):
+    if task.strip():
+        c.execute("INSERT INTO tasks (task, done, priority) VALUES (?, ?, ?)", (task,0,priority))
+        conn.commit()
+        st.success("Task added!")
+        st.rerun()
 
 # ---------------- FILTER ----------------
-filter_option = st.radio(
-    "Show",
-    ["All", "Pending", "Done"],
-    horizontal=True
-)
-
-# ---------------- FETCH TASKS ----------------
+filter_option = st.radio("Show", ["All","Pending","Done"], horizontal=True)
 query = "SELECT * FROM tasks"
-if filter_option == "Pending":
-    query += " WHERE done = 0"
-elif filter_option == "Done":
-    query += " WHERE done = 1"
+if filter_option=="Pending": query+=" WHERE done=0"
+elif filter_option=="Done": query+=" WHERE done=1"
 
 tasks = c.execute(query).fetchall()
 
@@ -132,44 +207,28 @@ tasks = c.execute(query).fetchall()
 st.markdown("### 📋 Your Tasks")
 
 for task_id, task_text, done, priority in tasks:
-
-    badge = (
-        "badge-high" if priority == "High"
-        else "badge-medium" if priority == "Medium"
-        else "badge-low"
-    )
-
-    col1, col2, col3 = st.columns([1, 6, 1])
+    badge = "badge-high" if priority=="High" else "badge-medium" if priority=="Medium" else "badge-low"
+    col1,col2,col3 = st.columns([1,6,1])
 
     with col1:
         check = st.checkbox("", value=bool(done), key=f"c{task_id}")
         if check != bool(done):
-            c.execute(
-                "UPDATE tasks SET done = ? WHERE id = ?",
-                (int(check), task_id)
-            )
+            c.execute("UPDATE tasks SET done=? WHERE id=?",(int(check),task_id))
             conn.commit()
             st.rerun()
 
     with col2:
         st.markdown(
-            f"""
-            <div class="task {'done' if done else ''}">
-                {task_text}
-                <span class="{badge}">({priority})</span>
-            </div>
-            """,
+            f'<div class="task {"done" if done else ""}">{task_text} <span class="{badge}">({priority})</span></div>',
             unsafe_allow_html=True
         )
 
     with col3:
         if st.button("❌", key=f"d{task_id}"):
-            c.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+            c.execute("DELETE FROM tasks WHERE id=?",(task_id,))
             conn.commit()
             st.rerun()
 
-# ---------------- END OF CARD ----------------
-st.markdown('</div>', unsafe_allow_html=True)
 
 
 
